@@ -80,8 +80,11 @@ ORDER BY TotalSales DESC;
 	mainly because it includes high-priced items like laptops and tablets,
 	compared to lower-priced categories like stationery.
 
-	Recommendation: In Q1 2026, the sales team should focus on ____,
-	because ____. This could ____.
+Recommendation: In Q1 2026, the sales team should focus on a Technology & Accessories promotion 
+at the South Portland store at the start of the spring semester in January,
+because Q1 is usually the slowest quarter of the year, and Technology & Accessories has the 
+highest average transaction amount. This could help 
+reduce the usual Q1 sales drop and increase Maine’s share of Northeast revenue.
 */
 
 
