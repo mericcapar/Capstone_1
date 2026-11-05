@@ -53,7 +53,7 @@ ORDER BY Year ASC, Month ASC;
 -- Can you provide a ranking of in-store sales performance by each store in the sales territory, or a
 -- ranking of online sales performance by state within an online sales territory?
 
-SELECT sl.StoreLocation, SUM(ss.Sale_Amount) AS TotalSales
+SELECT sl.StoreLocation, ROUND(SUM(ss.Sale_Amount),2) AS TotalSales
 FROM store_sales ss
 JOIN store_locations sl ON ss.Store_ID = sl.StoreId
 WHERE sl.State = 'Maine'
