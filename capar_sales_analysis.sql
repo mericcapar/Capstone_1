@@ -41,6 +41,10 @@ ORDER BY Year ASC, Month ASC;
 	WHERE sl.State IN ('Maryland', 'Massachusetts','Maine','New Jersey')
 	GROUP BY State
 	ORDER BY Percent DESC;
+    
+-- Result: Northeast total in-store sales were $24237526.98.
+-- Maine: $1877249.75 (7.75%), ranked 4th of 4 states.
+-- Top state: Maryland ($11451615.09, 47.25%).
 
 
 	-- What is the number of transactions per month and average transaction amount by product
@@ -56,6 +60,9 @@ ORDER BY Year ASC, Month ASC;
 		WHERE sl.state = 'Maine'
 		GROUP BY Year,Month, Category
 		ORDER BY YEAR ASC, MONTH ASC, Category ASC;
+        
+-- Result: Technology & Accessories has the highest average transaction amount.
+-- Art Supplies has the most transactions per month.
 
 
 -- Can you provide a ranking of in-store sales performance by each store in the sales territory, or a
@@ -67,6 +74,8 @@ JOIN store_locations sl ON ss.Store_ID = sl.StoreId
 WHERE sl.State = 'Maine'
 GROUP BY sl.StoreLocation
 ORDER BY TotalSales DESC;
+
+-- Result: Top store: South Portland ($332611.76). Lowest store: Bar Harbor ($287452.08).
 
 /*
 Q6: Recommendation for next quarter (Q1 2026)
