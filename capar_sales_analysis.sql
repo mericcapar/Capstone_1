@@ -4,23 +4,21 @@ USE sample_sales;
 -- Assumption: This analysis includes in-store sales only.
 -- Online sales belong to the separate Online Sales territory and its managers.
 
--- What is total revenue overall for sales in the assigned territory, 
+-- Q1: What is total revenue overall for sales in the assigned territory,
+-- plus the start date and end date that tell you what period the data covers?
 
-
--- plus the start date and end date that tell you what period the data covers?   
-
-SELECT ROUND(SUM(ss.Sale_Amount),2) AS TotalSales,
+SELECT ROUND(SUM(ss.Sale_Amount), 2) AS TotalSales,
        MIN(ss.Transaction_Date) AS StartDate,
        MAX(ss.Transaction_Date) AS EndDate
 FROM store_sales ss
 JOIN store_locations sl ON ss.Store_ID = sl.StoreId
 WHERE sl.State = 'Maine';
 
--- Result: Maine total in-store sales were $1877249.75 from 2022-01-01 to 2025-12-31.
+-- Result: Maine total in-store sales were $1,877,249.75 from 2022-01-01 to 2025-12-31.
 
--- What is the revenue breakdown by year and month for the sales territory?
+-- Q2: What is the revenue breakdown by year and month for the sales territory?
 
-SELECT YEAR(ss.Transaction_Date)  AS Year,
+SELECT YEAR(ss.Transaction_Date) AS Year,
        MONTH(ss.Transaction_Date) AS Month,
        ROUND(SUM(ss.Sale_Amount), 2) AS Revenue
 FROM store_sales ss
@@ -29,53 +27,70 @@ WHERE sl.State = 'Maine'
 GROUP BY YEAR(ss.Transaction_Date), MONTH(ss.Transaction_Date)
 ORDER BY Year ASC, Month ASC;
 
--- Result: 48 months of data. Lowest month: 1/2022 - $15700.31. Highest month: 10/2025 - $93456.68.
+-- Result: 48 months of data. Lowest month: 1/2022 ($15,700.31). Highest month: 10/2025 ($93,456.68).
 
--- Provide a comparison of total revenue for the specific sales territory and the region it belong to.
+-- Q3: Provide a comparison of total revenue for the specific sales territory and the region it belongs to.
+-- Northeast states are: Maryland, Massachusetts, Maine, New Jersey
 
--- Northeast states are : Maryland, Massachusetts, Maine, New Jersey
-	SELECT sl.State as State, ROUND(SUM(ss.Sale_Amount),2) AS Total,
-		ROUND(SUM(ss.Sale_Amount) / SUM(SUM(ss.Sale_Amount)) OVER () * 100, 2) AS Percent
-	FROM store_sales ss
-	JOIN store_locations sl ON ss.Store_ID = sl.StoreId
-	WHERE sl.State IN ('Maryland', 'Massachusetts','Maine','New Jersey')
-	GROUP BY State
-	ORDER BY Percent DESC;
-    
--- Result: Northeast total in-store sales were $24237526.98.
--- Maine: $1877249.75 (7.75%), ranked 4th of 4 states.
--- Top state: Maryland ($11451615.09, 47.25%).
+SELECT sl.State AS State,
+       ROUND(SUM(ss.Sale_Amount), 2) AS Total,
+       ROUND(SUM(ss.Sale_Amount) / SUM(SUM(ss.Sale_Amount)) OVER () * 100, 2) AS Percent
+FROM store_sales ss
+JOIN store_locations sl ON ss.Store_ID = sl.StoreId
+WHERE sl.State IN ('Maryland', 'Massachusetts', 'Maine', 'New Jersey')
+GROUP BY State
+ORDER BY Percent DESC;
 
+-- Result: Northeast total in-store sales were $24,237,526.98.
+-- Maine: $1,877,249.75 (7.75%), ranked 4th of 4 states.
+-- Top state: Maryland ($11,451,615.09, 47.25%).
 
-	-- What is the number of transactions per month and average transaction amount by product
-	-- category for the sales territory?
+-- Q4: What is the number of transactions per month and average transaction amount by product
+-- category for the sales territory?
 
-		SELECT YEAR(ss.Transaction_Date) as Year,MONTH(ss.Transaction_Date) as Month, ic.Category as Category,
-				COUNT(*) as TotalTransaction,
-				ROUND(AVG(ss.Sale_Amount),2) AS Average
-		FROM store_sales ss
-		JOIN store_locations sl ON ss.Store_ID = sl.StoreId
-		JOIN products p ON ss.Prod_Num = p.ProdNum
-		JOIN inventory_categories ic ON p.Categoryid = ic.Categoryid
-		WHERE sl.state = 'Maine'
-		GROUP BY Year,Month, Category
-		ORDER BY YEAR ASC, MONTH ASC, Category ASC;
-        
--- Result: Technology & Accessories has the highest average transaction amount.
--- Art Supplies has the most transactions per month.
+SELECT YEAR(ss.Transaction_Date) AS Year,
+       MONTH(ss.Transaction_Date) AS Month,
+       ic.Category AS Category,
+       COUNT(*) AS TotalTransaction,
+       ROUND(AVG(ss.Sale_Amount), 2) AS Average
+FROM store_sales ss
+JOIN store_locations sl ON ss.Store_ID = sl.StoreId
+JOIN products p ON ss.Prod_Num = p.ProdNum
+JOIN inventory_categories ic ON p.Categoryid = ic.Categoryid
+WHERE sl.State = 'Maine'
+GROUP BY Year, Month, Category
+ORDER BY Year ASC, Month ASC, Category ASC;
 
+-- Result: Technology & Accessories has the highest average transaction amount
+-- and the most transactions.
 
--- Can you provide a ranking of in-store sales performance by each store in the sales territory, or a
+-- Q5: Can you provide a ranking of in-store sales performance by each store in the sales territory, or a
 -- ranking of online sales performance by state within an online sales territory?
 
-SELECT sl.StoreLocation, ROUND(SUM(ss.Sale_Amount),2) AS TotalSales
+SELECT sl.StoreLocation,
+       ROUND(SUM(ss.Sale_Amount), 2) AS TotalSales
 FROM store_sales ss
 JOIN store_locations sl ON ss.Store_ID = sl.StoreId
 WHERE sl.State = 'Maine'
 GROUP BY sl.StoreLocation
 ORDER BY TotalSales DESC;
 
--- Result: Top store: South Portland ($332611.76). Lowest store: Bar Harbor ($287452.08).
+-- Result: Top store: South Portland ($332,611.76). Lowest store: Bar Harbor ($287,452.08).
+
+-- Supporting query for Q6: revenue by year and quarter.
+
+SELECT YEAR(ss.Transaction_Date) AS Year,
+       QUARTER(ss.Transaction_Date) AS Month,
+       ROUND(SUM(ss.Sale_Amount), 2) AS Revenue
+FROM store_sales ss
+JOIN store_locations sl ON ss.Store_ID = sl.StoreId
+WHERE sl.State = 'Maine'
+GROUP BY YEAR(ss.Transaction_Date), MONTH(ss.Transaction_Date)
+ORDER BY Year ASC, Month ASC;
+
+
+-- Result: Q3 was the strongest quarter in 2022, 2023 and 2024.
+-- Q1 was the lowest quarter overall ($429,579.54).
 
 /*
 Q6: Recommendation for next quarter (Q1 2026)
@@ -94,7 +109,8 @@ season in August and September, when students buy books, supplies and technology
 Q1 was the lowest quarter overall, likely because it is the slow period right
 after the holiday shopping season. Sales also grew strongly over time, with big
 jumps in 2023 (+62%) and 2025 (+54%).
-(See capar_territory_chart.xlsx for the quarterly and half-year tables.)
+(See the quarterly query above and capar_territory_chart.xlsx for the
+quarterly and half-year tables.)
 
 Finding 3: Technology & Accessories has the highest average transaction amount,
 mainly because it includes high-priced items like laptops and tablets, compared
@@ -107,6 +123,3 @@ making sure South Portland has enough Technology & Accessories stock, because
 these are the periods and products where customers already spend the most.
 Being visible during these peak months could bring the biggest increase in revenue.
 */
-
-
-
