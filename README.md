@@ -6,8 +6,9 @@ SQL and Excel analysis of in-store sales for the **Maine** territory.
 
 ## Files
 - `capar_sales_analysis.sql`: queries, results and recommendation
-- `capar_territory_chart.xlsx`: PivotChart of monthly revenue by year
-- `capar_capstone1_presentation_v2.pptx`: slides used in the video
+- `capar_territory_chart.xlsx`: PivotChart of monthly revenue by year, plus quarterly and half-year pivot tables
+- `Q2_order_sample.csv`: Q2 query results exported from MySQL, used as the data source for the PivotChart
+- `capar_capstone1_final_presentation_v2.pptx`: slides used in the video
 
 ## Key Findings
 - Total sales: **$1,877,249.75**, growing from $279K (2022) to $695K (2025)
